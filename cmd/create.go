@@ -23,7 +23,8 @@ var createCmd = &cobra.Command{
 
 // 初始化
 func initProjce(moduleName string) {
-	goVersion := runtime.Version()
+	// 获取当前 Go 版本数字部分
+	goVersion := runtime.Version()[2:]
 	err := os.Mkdir(moduleName, os.ModePerm)
 	if err != nil {
 		panic(err)

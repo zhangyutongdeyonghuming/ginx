@@ -23,17 +23,11 @@ import (
 
 func main() {
 	r := gin.Default()
-	mw.RegisterMiddleware(r)
-	register(r)
+	mw.Register(r)
+	handler.Register(r)
 
 	r.Run()
 }
-
-// 注册路由
-func register(r *gin.Engine) {
-	r.GET("/ping", handler.Ping)
-}
-
 	`,
 		Path: "./",
 	},
@@ -61,5 +55,52 @@ func Ping(c *gin.Context) {
 }
 		`,
 		Path: "./biz/handler/",
+	},
+	{
+		Name: "register.go",
+		Template: `
+package handler
+
+import (
+	"github.com/gin-gonic/gin"
+)
+
+// 注册路由
+func Register(r *gin.Engine) {
+	r.GET("/ping", Ping)
+}
+		`,
+		Path: "./biz/handler/",
+	},
+	{
+		Name: "middleware.go",
+		Template: `
+package mw
+
+import (
+	"time"
+
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+)
+
+// Register 注册中间件
+func Register(r *gin.Engine) {
+	r.Use(corsMw())
+}
+
+// cors 跨域中间件
+func corsMw() gin.HandlerFunc {
+	return cors.New(cors.Config{
+		AllowOrigins:     []string{"*"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Origin", "Content-Type", "Authorization"},
+		ExposeHeaders:    []string{"Content-Length", "Content-Type"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	})
+}
+		`,
+		Path: "./biz/mw/",
 	},
 }
